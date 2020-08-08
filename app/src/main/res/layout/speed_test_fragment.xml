@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="speedTestVM"
+            type="com.demo.speedtest.ui.viewmodels.SpeedTestVM" />
+    </data>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="@color/colorDarkGrey">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/tvHostName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_11sdp"
+                android:text="host name"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@android:color/background_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/ivGauge" />
+
+            <TextView
+                android:id="@+id/tvIPAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:text="192.169.2.1"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@android:color/background_light"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvHostName" />
+
+            <ImageView
+                android:id="@+id/ivGauge"
+                android:layout_width="@dimen/_250sdp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/main" />
+
+            <ImageView
+                android:id="@+id/ivBar"
+                android:layout_width="@dimen/_250sdp"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/app_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/bar" />
+
+            <TextView
+                android:id="@+id/tvPingHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:text="PING"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@color/colorAccentGauge"
+                android:textStyle="normal|bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/guideline" />
+
+            <TextView
+                android:id="@+id/tvPing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="2dp"
+                android:text="@{speedTestVM.getPing, default=0}"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@android:color/background_light"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPingHead" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_begin="@dimen/_300sdp" />
+
+            <TextView
+                android:id="@+id/tvDownloadHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
+                android:text="Download"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@color/colorAccentGauge"
+                android:textStyle="normal|bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvPing" />
+
+            <TextView
+                android:id="@+id/tvDownloadSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="2dp"
+                android:text="0 Mbps"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@android:color/background_light"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDownloadHead" />
+
+            <TextView
+                android:id="@+id/tvUploadHead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="20dp"
+                android:text="Upload"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Medium"
+                android:textColor="@color/colorAccentGauge"
+                android:textStyle="normal|bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvDownloadSpeed" />
+
+            <TextView
+                android:id="@+id/tvUploadSpeed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="2dp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:text="0 Mbps"
+                android:textAlignment="center"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@android:color/background_light"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvUploadHead" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guideline3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_begin="126dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+</layout>
