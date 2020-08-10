@@ -1,5 +1,6 @@
 package com.demo.speedtest.ui.fragments;
 
+import android.animation.AnimatorSet;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -34,6 +35,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.demo.speedtest.app_utility.StaticReferenceClass.SPEED_TEST_CONFIG;
 import static com.demo.speedtest.app_utility.StaticReferenceClass.SPEED_TEST_SERVERS;
@@ -68,7 +72,7 @@ public class SpeedTestFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSpeedTestVM = new ViewModelProvider(getActivity()).get(SpeedTestVM.class);
+        mSpeedTestVM = new ViewModelProvider(this).get(SpeedTestVM.class);
         getSpeedTestHostsHandler = new GetSpeedTestHostsHandler();
         getSpeedTestHostsHandler.start();
 
@@ -87,8 +91,8 @@ public class SpeedTestFragment extends Fragment {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startSpeedTest();
-                //checkConfigAndHostURL();
+                //startSpeedTest();
+                checkConfigAndHostURL();
             }
         }, 1000);
 
@@ -137,14 +141,37 @@ public class SpeedTestFragment extends Fragment {
                 String sFinalDownloadSpeed = downloadSpeed + " Mbps";
                 speedTestFragmentBinding.tvDownloadSpeed.setText(sFinalDownloadSpeed);
                 if (downloadTest.isFinished()) {
+                    //Log.e("Anim", "500");
                     rotate = new RotateAnimation(position, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     ANIM_DURATION = 500;
-                    String sFinalURL = sURL.replace("http://", "https://");
-                    uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
-                    uploadTest.start();
+                    final String sFinalURL = sURL.replace("http://", "https://");
+                    position = 0;
+                    lastPosition = 0;
+                    /*getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                            uploadTest.uploadTest = uploadTest;
+                            uploadTest.start();
+                        }
+                    });*/
+
+                    Runnable task = new Runnable() {
+                        public void run() {
+                            uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                            uploadTest.uploadTest = uploadTest;
+                            uploadTest.start();
+                        }
+                    };
+                    worker.schedule(task, 1200, TimeUnit.MILLISECONDS);
+                    //worker.uploadTest();
+                    /*uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                    uploadTest.uploadTest = uploadTest;
+                    uploadTest.start();*/
                 } else {
+                    //Log.e("Anim", "300");
                     rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                    ANIM_DURATION = 320;
+                    ANIM_DURATION = 300;
                 }
                 rotate.setInterpolator(new LinearInterpolator());
                 rotate.setDuration(ANIM_DURATION);
@@ -162,9 +189,11 @@ public class SpeedTestFragment extends Fragment {
                 if (uploadTest.isFinished()) {
                     rotate = new RotateAnimation(position, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     ANIM_DURATION = 500;
+                    Log.e("Last anim", "500");
                 } else {
                     rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-                    ANIM_DURATION = 320;
+                    ANIM_DURATION = 300;
+                    Log.e("normal anim", "300" + uploadTest.isFinished());
                 }
                 rotate.setInterpolator(new LinearInterpolator());
                 rotate.setDuration(ANIM_DURATION);
@@ -173,12 +202,12 @@ public class SpeedTestFragment extends Fragment {
             }
         });
 
-        if(uploadTest!=null) {
-            double uploadRate = uploadTest.getInstantUploadRate();
-        }
-
         return speedTestFragmentBinding.getRoot();
     }
+
+    private static final ScheduledExecutorService worker =
+            Executors.newSingleThreadScheduledExecutor();
+
 
     private void checkConfigAndHostURL(){
         /*ServerRequestManager serverRequestManager = new ServerRequestManager() {

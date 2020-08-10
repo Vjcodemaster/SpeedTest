@@ -7,6 +7,7 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -57,17 +58,19 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
         int count = getSupportFragmentManager().getBackStackEntryCount();
-        if (count == 0) {
+        if (count == 1) {
+            getSupportFragmentManager().popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
             final Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     mActivityMainBind.btnGo.setVisibility(View.VISIBLE);
                 }
-            }, 800);
+            }, 500);
 
+        } else {
+            super.onBackPressed();
         }
     }
 }

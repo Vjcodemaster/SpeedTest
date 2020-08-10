@@ -14,6 +14,7 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
+
 import static com.demo.speedtest.speedtest_utils.HttpUploadTest.uploadedKByte;
 
 /**
@@ -29,6 +30,9 @@ public class HttpUploadTest extends Thread {
     double finalUploadRate = 0.0;
     long startTime;
     public SpeedTestVM speedTestVM;
+    double instantUploadRate = 0.0;
+    public HttpUploadTest uploadTest;
+    public int count = 0;
 
     public HttpUploadTest(String fileURL) {
         this.fileURL = fileURL;
@@ -57,11 +61,11 @@ public class HttpUploadTest extends Thread {
     }
 
     public double getInstantUploadRate() {
-        try {
+        /*try {
             BigDecimal bd = new BigDecimal(uploadedKByte);
         } catch (Exception ex) {
             return 0.0;
-        }
+        }*/
 
         if (uploadedKByte >= 0) {
             long now = System.currentTimeMillis();
@@ -69,6 +73,16 @@ public class HttpUploadTest extends Thread {
             return round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
         } else {
             return 0.0;
+        }
+    }
+
+    public void setInstantUploadRate(int uploadedKByte, double elapsedTime) {
+
+        if (uploadedKByte >= 0) {
+            instantUploadRate = round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
+            speedTestVM.postUploadSpeed(String.valueOf(instantUploadRate));
+        } else {
+            instantUploadRate = 0.0;
         }
     }
 
@@ -85,13 +99,14 @@ public class HttpUploadTest extends Thread {
 
             ExecutorService executor = Executors.newFixedThreadPool(4);
             for (int i = 0; i < 4; i++) {
-                executor.execute(new HandlerUpload(url, speedTestVM));
+                executor.execute(new HandlerUpload(url, speedTestVM, uploadTest));
             }
             executor.shutdown();
             while (!executor.isTerminated()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException ex) {
+                    ex.printStackTrace();
                 }
             }
 
@@ -109,12 +124,14 @@ public class HttpUploadTest extends Thread {
 class HandlerUpload extends Thread {
 
     URL url;
-    double instantUploadRate = 0;
+    //double instantUploadRate = 0;
     SpeedTestVM speedTestVM;
+    HttpUploadTest uploadTest;
 
-    public HandlerUpload(URL url, SpeedTestVM speedTestVM) {
+    public HandlerUpload(URL url, SpeedTestVM speedTestVM, HttpUploadTest uploadTest) {
         this.url = url;
         this.speedTestVM = speedTestVM;
+        this.uploadTest = uploadTest;
     }
 
     public void run() {
@@ -149,11 +166,16 @@ class HandlerUpload extends Thread {
                 uploadedKByte += buffer.length / 1024.0;
                 long endTime = System.currentTimeMillis();
                 double uploadElapsedTime = (endTime - startTime) / 1000.0;
+                uploadTest.setInstantUploadRate(uploadedKByte, uploadElapsedTime);
                 //speedTestVM.postUploadSpeed(String.valueOf(round((Double) (((uploadedKByte / 1000.0) * 8) / uploadElapsedTime), 2)));
                 //setInstantUploadRate(uploadedKByte, uploadElapsedTime);
                 //getInstantUploadRate(uploadElapsedTime, startTime);
                 //speedTestVM.postUploadSpeed(String.valueOf(getInstantUploadRate(uploadElapsedTime, startTime)));
                 if (uploadElapsedTime >= timeout) {
+                    uploadTest.count++;
+                    if(uploadTest.count==4)
+                        uploadTest.finished = true;
+                    //Log.e("Breakout time", uploadElapsedTime + "");
                     break;
                 }
 
@@ -163,45 +185,7 @@ class HandlerUpload extends Thread {
                 ex.printStackTrace();
                 break;
             }
+            //uploadTest.finished = true;
         }
-    }
-
-    public double getInstantUploadRate(double uploadElapsedTime, double startTime) {
-        try {
-            BigDecimal bd = new BigDecimal(uploadedKByte);
-        } catch (Exception ex) {
-            return 0.0;
-        }
-
-        if (uploadedKByte >= 0) {
-            long now = System.currentTimeMillis();
-            uploadElapsedTime = (now - startTime) / 1000.0;
-            return round((Double) (((uploadedKByte / 1000.0) * 8) / uploadElapsedTime), 2);
-        } else {
-            return 0.0;
-        }
-    }
-
-    public void setInstantUploadRate(int uploadedKByte, double elapsedTime) {
-
-        if (uploadedKByte >= 0) {
-            this.instantUploadRate = round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
-            speedTestVM.postUploadSpeed(String.valueOf(instantUploadRate));
-        } else {
-            this.instantUploadRate = 0.0;
-        }
-    }
-
-    private double round(double value, int places) {
-        if (places < 0) throw new IllegalArgumentException();
-
-        BigDecimal bd;
-        try {
-            bd = new BigDecimal(value);
-        } catch (Exception ex) {
-            return 0.0;
-        }
-        bd = bd.setScale(places, RoundingMode.HALF_UP);
-        return bd.doubleValue();
     }
 }

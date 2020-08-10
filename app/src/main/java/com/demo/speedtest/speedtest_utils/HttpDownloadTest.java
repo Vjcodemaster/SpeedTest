@@ -1,5 +1,7 @@
 package com.demo.speedtest.speedtest_utils;
 
+import android.util.Log;
+
 import com.demo.speedtest.ui.viewmodels.SpeedTestVM;
 
 import java.io.InputStream;
@@ -56,10 +58,13 @@ public class HttpDownloadTest extends Thread {
         return instantDownloadRate;
     }
 
-    public void setInstantDownloadRate(int downloadedByte, double elapsedTime) {
+    public void setInstantDownloadRate(int downloadedByte, double elapsedTime, int timeout) {
 
         if (downloadedByte >= 0) {
             this.instantDownloadRate = round((Double) (((downloadedByte * 8) / (1000 * 1000)) / elapsedTime), 2);
+            if (downloadElapsedTime >= timeout)
+                finished = true;
+
             speedTestVM.postDownloadSpeed(String.valueOf(instantDownloadRate));
         } else {
             this.instantDownloadRate = 0.0;
@@ -116,8 +121,10 @@ public class HttpDownloadTest extends Thread {
                         downloadedByte += len;
                         endTime = System.currentTimeMillis();
                         downloadElapsedTime = (endTime - startTime) / 1000.0;
-                        setInstantDownloadRate(downloadedByte, downloadElapsedTime);
+                        Log.e("breakout len", "");
+                        setInstantDownloadRate(downloadedByte, downloadElapsedTime, timeout);
                         if (downloadElapsedTime >= timeout) {
+                            finished = true;
                             break outer;
                         }
                     }
