@@ -6,4 +6,10 @@
     
     <color name="colorDarkGrey">#2D3A4A</color>
     <color name="colorAccentGauge">#fb6c5c</color>
+
+    <color name="colorVeryDarkBlue">#192356</color>
+    <color name="colorDarkBlue">#4260AB</color>
+    <color name="colorGray">#707070</color>
+    <color name="colorAmber">#FA8617</color>
+    <color name="colorDarkBlueGauge">#3F5CA8</color>
 </resources>

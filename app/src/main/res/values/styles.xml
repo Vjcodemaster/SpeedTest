@@ -7,4 +7,23 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="PoppinsMediumFont">
+        <item name="android:fontFamily">@font/poppins_medium</item>
+        <item name="fontFamily">@font/poppins_medium</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="PoppinsRegularFont">
+        <item name="android:fontFamily">@font/poppins_regular</item>
+        <item name="fontFamily">@font/poppins_regular</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="PoppinsSemiBoldFont">
+        <item name="android:fontFamily">@font/poppins_semi_bold</item>
+        <item name="fontFamily">@font/poppins_semi_bold</item>
+        <item name="android:textColor">@color/colorDarkBlueGauge</item>
+        <item name="android:textSize">@dimen/_19ssp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 </resources>

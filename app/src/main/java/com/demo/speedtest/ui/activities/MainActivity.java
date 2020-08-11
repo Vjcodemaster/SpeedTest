@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.demo.speedtest.R;
+import com.demo.speedtest.ui.fragments.BlankFragment;
 import com.demo.speedtest.ui.fragments.SpeedTestFragment;
 import com.demo.speedtest.databinding.ActivityMainBinding;
 import com.demo.speedtest.ui.viewmodels.MainActivityVM;
@@ -35,12 +36,21 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.setVisibility(View.GONE);
-                openSpeedTestFragment();
+                //openSpeedTestFragment();
                 //openSpeedTestActivity();
+                openFragment();
             }
         });
 
 
+    }
+
+    private void openFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_right);
+        ft.add(R.id.flContainer, BlankFragment.newInstance("", ""));
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void openSpeedTestFragment() {
