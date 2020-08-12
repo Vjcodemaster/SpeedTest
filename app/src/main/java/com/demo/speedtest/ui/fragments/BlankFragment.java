@@ -4,11 +4,13 @@ import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.demo.speedtest.R;
+import com.github.anastr.speedviewlib.PointerSpeedometer;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -61,6 +63,17 @@ public class BlankFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.speed_test_new_fragment, container, false);
+        View view =inflater.inflate(R.layout.speed_test_new_fragment, container, false);
+        final PointerSpeedometer pointerSpeedometer = view.findViewById(R.id.pointerSpeedometer);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                pointerSpeedometer.setSpeedometerColor(getActivity().getResources().getColor(R.color.colorDarkBlue));
+                pointerSpeedometer.speedTo(500);
+            }
+        }, 1500);
+
+        return view;
     }
 }

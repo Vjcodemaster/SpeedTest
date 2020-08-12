@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:tools="http://schemas.android.com/tools"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -81,12 +81,32 @@
             app:layout_constraintTop_toBottomOf="@+id/tvInternetProviderName"
             app:srcCompat="@drawable/gauge" />
 
+        <com.github.anastr.speedviewlib.PointerSpeedometer
+            android:id="@+id/pointerSpeedometer"
+            android:layout_width="@dimen/_230sdp"
+            android:layout_height="@dimen/_180sdp"
+            android:layout_marginEnd="@dimen/_2sdp"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:visibility="visible"
+            app:sv_maxSpeed="1000"
+            app:sv_minSpeed="0"
+            app:layout_constraintBottom_toBottomOf="@+id/ivBar"
+            app:layout_constraintEnd_toEndOf="@+id/ivBar"
+            app:layout_constraintStart_toStartOf="@+id/ivBar"
+            app:layout_constraintTop_toTopOf="@+id/ivBar"
+            app:sv_backgroundCircleColor="@android:color/transparent"
+            app:sv_centerCircleColor="@android:color/transparent"
+            app:sv_indicatorColor="@android:color/transparent"
+            app:sv_markColor="@android:color/transparent"
+            app:sv_speedometerColor="@color/colorDarkBlue"
+            app:sv_speedometerWidth="@dimen/_12sdp" />
+
         <TextView
             android:id="@+id/tvGaugeSpeed"
+            style="@style/PoppinsSemiBoldFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="134 Mbps"
-            style="@style/PoppinsSemiBoldFont"
             app:layout_constraintBottom_toBottomOf="@+id/ivBar"
             app:layout_constraintEnd_toEndOf="@+id/ivBar"
             app:layout_constraintStart_toStartOf="@+id/ivBar"
