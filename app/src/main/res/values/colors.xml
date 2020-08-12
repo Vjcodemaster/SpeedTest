@@ -12,4 +12,5 @@
     <color name="colorGray">#707070</color>
     <color name="colorAmber">#FA8617</color>
     <color name="colorDarkBlueGauge">#3F5CA8</color>
+    <color name="colorFadedWhite">#ecebeb</color>
 </resources>

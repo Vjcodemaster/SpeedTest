@@ -28,8 +28,10 @@ public class ServerRequestVolleyManager {
     HashMap<String, URLInfo> mHMURLInfo = new HashMap<>();
     int count = 0;
     int countComparator = 0;
+    String ip;
     double selfLat = 0.0;
     double selfLon = 0.0;
+    String isp;
     double tmp = 19349458;
 
     String url;
@@ -63,16 +65,62 @@ public class ServerRequestVolleyManager {
                     public void onResponse(String response) {
                         // Success
                         //onCallSuccess(response);
-                        String ip = response.split("client ip=\"")[1].split(" ")[0].replace("\"", "");
+                        /*String ip = response.split("client ip=\"")[1].split(" ")[0].replace("\"", "");
                         selfLat = Double.parseDouble(response.split("lat=\"")[1].split(" ")[0].replace("\"", ""));
                         selfLon = Double.parseDouble(response.split("lon=\"")[1].split(" ")[0].replace("\"", ""));
+                        isp = response.split("isp=\"")[1].replace("\"", "");
 
                         HashMap<String, String> hmConfigData = new HashMap<>();
                         hmConfigData.put("ip", ip);
                         hmConfigData.put("lat", String.valueOf(selfLat));
                         hmConfigData.put("lon", String.valueOf(selfLon));
+                        hmConfigData.put("isp", String.valueOf(isp));
                         SpeedTestVM speedTestVM = (SpeedTestVM) viewModel;
-                        speedTestVM.postServerConfigData(hmConfigData);
+                        speedTestVM.postServerConfigData(hmConfigData);*/
+
+                        HashMap<String, String> hmConfigData = new HashMap<>();
+                        try {
+                            XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+                            factory.setNamespaceAware(true);
+                            XmlPullParser xpp = factory.newPullParser();
+
+                            xpp.setInput(new StringReader(response));
+                            int eventType = xpp.getEventType();
+                            while (eventType != XmlPullParser.END_DOCUMENT) {
+                                if (eventType == XmlPullParser.START_TAG) {
+                                    for (int i = 0; i < xpp.getAttributeCount(); i++) {
+                                        System.out.println("Attribute name: " + xpp.getAttributeName(i) + " - Attribute value: " + xpp.getAttributeValue(i));
+
+                                        String sCase = xpp.getAttributeName(i);
+                                        switch (sCase) {
+                                            case "ip":
+                                                hmConfigData.put("ip", xpp.getAttributeValue(i));
+                                                break;
+                                            case "lat":
+                                                selfLat = Double.parseDouble(xpp.getAttributeValue(i));
+                                                hmConfigData.put("lat", xpp.getAttributeValue(i));
+                                                break;
+                                            case "lon":
+                                                selfLon = Double.parseDouble(xpp.getAttributeValue(i));
+                                                hmConfigData.put("lon", xpp.getAttributeValue(i));
+                                                break;
+                                            case "isp":
+                                                hmConfigData.put("isp", xpp.getAttributeValue(i));
+                                                break;
+                                        }
+                                        if(hmConfigData.size()==4)
+                                            break;
+                                    }
+                                }
+                                if(hmConfigData.size()==4)
+                                    break;
+                                eventType = xpp.next();
+                            }
+                            SpeedTestVM speedTestVM = (SpeedTestVM) viewModel;
+                            speedTestVM.postServerConfigData(hmConfigData);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 new Response.ErrorListener() {

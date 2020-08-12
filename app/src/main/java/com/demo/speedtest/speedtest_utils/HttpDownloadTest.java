@@ -144,6 +144,7 @@ public class HttpDownloadTest extends Thread {
         finalDownloadRate = ((downloadedByte * 8) / (1000 * 1000.0)) / downloadElapsedTime;
 
         finished = true;
+        speedTestVM.postDownloadTestResult(true);
     }
 
 }

@@ -1,6 +1,5 @@
 package com.demo.speedtest.ui.fragments;
 
-import android.animation.AnimatorSet;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -87,14 +86,22 @@ public class SpeedTestFragment extends Fragment {
         speedTestFragmentBinding.setSpeedTestVM(mSpeedTestVM);
         speedTestFragmentBinding.setLifecycleOwner(getActivity());
 
-        final Handler handler = new Handler();
+        /*final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 //startSpeedTest();
                 checkConfigAndHostURL();
             }
-        }, 1000);
+        }, 1000);*/
+
+        speedTestFragmentBinding.btnStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speedTestFragmentBinding.btnStart.setVisibility(View.INVISIBLE);
+                checkConfigAndHostURL();
+            }
+        });
 
         mSpeedTestVM.mHMServerConfigData.observe(getActivity(), new Observer<HashMap<String, String>>() {
             @Override
@@ -112,8 +119,9 @@ public class SpeedTestFragment extends Fragment {
                 sURL = entry.getKey();
                 URLInfo urlInfo = entry.getValue();
 
-                speedTestFragmentBinding.tvHostName.setText(urlInfo.getSponsor());
-                speedTestFragmentBinding.tvIPAddress.setText(hmConfigData.get("ip"));
+                speedTestFragmentBinding.tvHostServerName.setText(urlInfo.getSponsor());
+                speedTestFragmentBinding.tvInternetProviderName.setText(hmConfigData.get("isp"));
+                //speedTestFragmentBinding.tvIPAddress.setText(hmConfigData.get("ip"));
 
                 //String sFinalTestURL = sURL.replace("http://", "https://").replace(":8080", "");
                 final PingTest pingTest = new PingTest(urlInfo.getHost().replace(":8080", ""), 3, mSpeedTestVM);
@@ -137,24 +145,29 @@ public class SpeedTestFragment extends Fragment {
         mSpeedTestVM.downloadSpeed.observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String downloadSpeed) {
-                position = getPositionByRate(Double.parseDouble(downloadSpeed));
-                String sFinalDownloadSpeed = downloadSpeed + " Mbps";
-                speedTestFragmentBinding.tvDownloadSpeed.setText(sFinalDownloadSpeed);
-                if (downloadTest.isFinished()) {
+                //position = getPositionByRate(Double.parseDouble(downloadSpeed));
+                //String sFinalDownloadSpeed = downloadSpeed + " Mbps";
+                String sSpeed = downloadSpeed + " " + getResources().getString(R.string.mbps);
+
+                speedTestFragmentBinding.tvGaugeSpeed.setText(sSpeed);
+                speedTestFragmentBinding.tvDownloadSpeed.setText(downloadSpeed);
+                speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
+                        getActivity().getResources().getColor(R.color.colorDarkBlue));
+                /*if (downloadTest.isFinished()) {
                     //Log.e("Anim", "500");
                     rotate = new RotateAnimation(position, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     ANIM_DURATION = 500;
                     final String sFinalURL = sURL.replace("http://", "https://");
                     position = 0;
                     lastPosition = 0;
-                    /*getActivity().runOnUiThread(new Runnable() {
+                    *//*getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
                             uploadTest.uploadTest = uploadTest;
                             uploadTest.start();
                         }
-                    });*/
+                    });*//*
 
                     Runnable task = new Runnable() {
                         public void run() {
@@ -165,9 +178,9 @@ public class SpeedTestFragment extends Fragment {
                     };
                     worker.schedule(task, 1200, TimeUnit.MILLISECONDS);
                     //worker.uploadTest();
-                    /*uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                    *//*uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
                     uploadTest.uploadTest = uploadTest;
-                    uploadTest.start();*/
+                    uploadTest.start();*//*
                 } else {
                     //Log.e("Anim", "300");
                     rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -176,17 +189,41 @@ public class SpeedTestFragment extends Fragment {
                 rotate.setInterpolator(new LinearInterpolator());
                 rotate.setDuration(ANIM_DURATION);
                 speedTestFragmentBinding.ivBar.startAnimation(rotate);
-                lastPosition = position;
+                lastPosition = position;*/
+            }
+        });
+
+        mSpeedTestVM.isDownloadSpeedComplete.observe(getActivity(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean isDownloadTestComplete) {
+                if(isDownloadTestComplete) {
+                    final String sFinalURL = sURL.replace("http://", "https://");
+                    Runnable task = new Runnable() {
+                        public void run() {
+                            speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
+                                    getActivity().getResources().getColor(R.color.colorAmber));
+                            speedTestFragmentBinding.tvGaugeSpeed.setTextColor(
+                                    getActivity().getResources().getColor(R.color.colorAmber));
+
+                            uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                            uploadTest.uploadTest = uploadTest;
+                            uploadTest.start();
+                        }
+                    };
+                    worker.schedule(task, 1200, TimeUnit.MILLISECONDS);
+                }
             }
         });
 
         mSpeedTestVM.uploadSpeed.observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String uploadSpeed) {
-                position = getPositionByRate(Double.parseDouble(uploadSpeed));
-                String sFinalUploadSpeed = uploadSpeed + " Mbps";
-                speedTestFragmentBinding.tvUploadSpeed.setText(sFinalUploadSpeed);
-                if (uploadTest.isFinished()) {
+                //position = getPositionByRate(Double.parseDouble(uploadSpeed));
+                //String sFinalUploadSpeed = uploadSpeed + " Mbps";
+                String sSpeed = uploadSpeed + " " + getResources().getString(R.string.mbps);
+                speedTestFragmentBinding.tvGaugeSpeed.setText(sSpeed);
+                speedTestFragmentBinding.tvUploadSpeed.setText(uploadSpeed);
+                /*if (uploadTest.isFinished()) {
                     rotate = new RotateAnimation(position, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     ANIM_DURATION = 500;
                     Log.e("Last anim", "500");
@@ -198,11 +235,22 @@ public class SpeedTestFragment extends Fragment {
                 rotate.setInterpolator(new LinearInterpolator());
                 rotate.setDuration(ANIM_DURATION);
                 speedTestFragmentBinding.ivBar.startAnimation(rotate);
-                lastPosition = position;
+                lastPosition = position;*/
             }
         });
 
         return speedTestFragmentBinding.getRoot();
+    }
+
+
+    private void reset(){
+        speedTestFragmentBinding.btnStart.setVisibility(View.VISIBLE);
+        speedTestFragmentBinding.pointerSpeedometer.setBackgroundColor(
+                getActivity().getResources().getColor(R.color.colorFadedWhite)
+        );
+        String sGaugeSpeed = getResources().getString(R.string.zero_digit) + " " +
+                getResources().getString(R.string.mbps);
+        speedTestFragmentBinding.tvGaugeSpeed.setText(sGaugeSpeed);
     }
 
     private static final ScheduledExecutorService worker =
@@ -298,7 +346,7 @@ public class SpeedTestFragment extends Fragment {
                         @Override
                         public void run() {
                             //speedTestFragmentBinding.tvHostName.setTextSize(12);
-                            speedTestFragmentBinding.tvHostName.setText("There was a problem in getting Host Location. Try again later.");
+                            //speedTestFragmentBinding.tvHostName.setText("There was a problem in getting Host Location. Try again later.");
                         }
                     });
                     return;
@@ -308,8 +356,8 @@ public class SpeedTestFragment extends Fragment {
                     @Override
                     public void run() {
                         //speedTestFragmentBinding.tvHostName.setText(String.format("Host Location: %s [Distance: %s km]", info.get(2), new DecimalFormat("#.##").format(distance / 1000)));
-                        speedTestFragmentBinding.tvIPAddress.setText(ip);
-                        speedTestFragmentBinding.tvHostName.setText(info.get(5));
+                        //speedTestFragmentBinding.tvIPAddress.setText(ip);
+                        //speedTestFragmentBinding.tvHostName.setText(info.get(5));
                     }
                 });
                 final List<Double> pingRateList = new ArrayList<>();

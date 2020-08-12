@@ -1,6 +1,5 @@
 package com.demo.speedtest.ui.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -12,7 +11,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.demo.speedtest.R;
-import com.demo.speedtest.ui.fragments.BlankFragment;
 import com.demo.speedtest.ui.fragments.SpeedTestFragment;
 import com.demo.speedtest.databinding.ActivityMainBinding;
 import com.demo.speedtest.ui.viewmodels.MainActivityVM;
@@ -36,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 view.setVisibility(View.GONE);
-                //openSpeedTestFragment();
+                openSpeedTestFragment();
                 //openSpeedTestActivity();
-                openFragment();
+                //openFragment();
             }
         });
 
