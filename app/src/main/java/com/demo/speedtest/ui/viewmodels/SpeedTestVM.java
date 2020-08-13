@@ -12,6 +12,7 @@ public class SpeedTestVM extends ViewModel {
     public SingleLiveEvent<HashMap<String, String>> mHMServerConfigData = new SingleLiveEvent<>();
     public SingleLiveEvent<Boolean> isPingTestComplete = new SingleLiveEvent<>();
     public SingleLiveEvent<Boolean> isDownloadSpeedComplete = new SingleLiveEvent<>();
+    public SingleLiveEvent<Boolean> isUploadSpeedComplete = new SingleLiveEvent<>();
     public MutableLiveData<String> ping = new MutableLiveData<>();
     public SingleLiveEvent<String> downloadSpeed = new SingleLiveEvent<>();
     public SingleLiveEvent<String> uploadSpeed = new SingleLiveEvent<>();
@@ -41,6 +42,10 @@ public class SpeedTestVM extends ViewModel {
 
     public void postDownloadTestResult(boolean isDownloadTestComplete){
         this.isDownloadSpeedComplete.postValue(isDownloadTestComplete);
+    }
+
+    public void postUploadTestResult(boolean isUploadTestComplete){
+        this.isUploadSpeedComplete.postValue(isUploadTestComplete);
     }
 
     public void postPingData(String ping){

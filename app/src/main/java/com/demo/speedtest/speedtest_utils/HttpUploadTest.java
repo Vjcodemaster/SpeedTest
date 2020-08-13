@@ -118,6 +118,7 @@ public class HttpUploadTest extends Thread {
             ex.printStackTrace();
         }
         finished = true;
+        speedTestVM.postUploadTestResult(true);
     }
 }
 

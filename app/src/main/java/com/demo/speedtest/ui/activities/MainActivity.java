@@ -43,13 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void openFragment() {
+    /*private void openFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_right, R.anim.enter_from_left, R.anim.exit_to_right);
         ft.add(R.id.flContainer, BlankFragment.newInstance("", ""));
         ft.addToBackStack(null);
         ft.commit();
-    }
+    }*/
 
     private void openSpeedTestFragment() {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
