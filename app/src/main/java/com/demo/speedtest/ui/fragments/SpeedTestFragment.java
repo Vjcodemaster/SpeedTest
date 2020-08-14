@@ -28,6 +28,8 @@ import com.demo.speedtest.speedtest_utils.HttpUploadTest;
 import com.demo.speedtest.speedtest_utils.PingTest;
 import com.demo.speedtest.speedtest_utils.URLInfo;
 import com.demo.speedtest.ui.viewmodels.SpeedTestVM;
+import com.github.anastr.speedviewlib.Gauge;
+import com.github.anastr.speedviewlib.components.Section;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -98,8 +100,13 @@ public class SpeedTestFragment extends Fragment {
 
         /*speedTestFragmentBinding.pointerSpeedometer.speedTo(1000, 600);
         speedTestFragmentBinding.pointerSpeedometer.speedTo(0, 600);*/
-        int value = getGaugePositionByInternetSpeed(75);
-        speedTestFragmentBinding.pointerSpeedometer.speedTo(value, 500);
+        //float value = (float)getGaugePositionByInternetSpeed(10);
+        //speedTestFragmentBinding.pointerSpeedometer.speedTo(value, 500);
+        //speedTestFragmentBinding.pointerSpeedometer.speedTo(20, 500);
+
+        float percentage = getGaugePercentageByInternetSpeed(200);
+        speedTestFragmentBinding.pointerSpeedometer.speedPercentTo((int) percentage, 500);
+        //speedTestFragmentBinding.pointerSpeedometer.speedPercentTo(85, 500);
         speedTestFragmentBinding.tvGaugeSpeed.setText(String.valueOf(speedTestFragmentBinding.pointerSpeedometer.getSpeed()));
 
         speedTestFragmentBinding.btnStart.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +162,7 @@ public class SpeedTestFragment extends Fragment {
             public void onChanged(String downloadSpeed) {
                 //position = getPositionByRate(Double.parseDouble(downloadSpeed));
                 //String sFinalDownloadSpeed = downloadSpeed + " Mbps";
-                int gaugePosition = getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
+                float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
                 speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);
                 //speedTestFragmentBinding.pointerSpeedometer.speedTo(gaugePosition);
@@ -163,7 +170,7 @@ public class SpeedTestFragment extends Fragment {
 
                 speedTestFragmentBinding.tvGaugeSpeed.setText(sSpeed);
                 speedTestFragmentBinding.tvDownloadSpeed.setText(downloadSpeed);
-                    speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
+                speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
                         getActivity().getResources().getColor(R.color.colorDarkBlue));
                 /*if (downloadTest.isFinished()) {
                     //Log.e("Anim", "500");
@@ -242,7 +249,7 @@ public class SpeedTestFragment extends Fragment {
                         Log.d("UI thread", "I am the UI thread");
                     }
                 });*/
-                int gaugePosition = getGaugePositionByInternetSpeed(Double.parseDouble(uploadSpeed));
+                float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(uploadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
                 //speedTestFragmentBinding.pointerSpeedometer.speedTo(gaugePosition);
                 speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);
@@ -299,7 +306,7 @@ public class SpeedTestFragment extends Fragment {
         handler.postDelayed(task, 700);
     }
 
-    private void restart(){
+    private void restart() {
         speedTestFragmentBinding.tvInternetProviderName.setText(getResources().getString(R.string.finding));
         speedTestFragmentBinding.tvHostServerName.setText(getResources().getString(R.string.finding));
         speedTestFragmentBinding.tvDownloadSpeed.setText(getResources().getString(R.string.zero_digit));
@@ -610,29 +617,60 @@ public class SpeedTestFragment extends Fragment {
         return 0;
     }
 
-    public int getGaugePositionByInternetSpeed(double rate) {
+    public double getGaugePositionByInternetSpeed(double rate) {
         //5 15 30 25 25 100 300 500 - this is the difference between each ticks
-        int speed = (int) rate;
+        //int speed = (int) rate;
         //double ss =  (rate * 9.5) + (rate / 2);
 
-        if(speed <= 5){
-            return (speed * 27) + speed;
-        } else if (speed <= 20){
-            return (speed * 12) + speed;
-        } else if (speed <= 50){
-            return (speed * 8) + (speed/2);
-        } else if (speed <= 75){
-            return (speed * 7) - (speed/3);
-        } else if (speed <= 100){
-            return (speed * 5) + speed;
-        }else if (speed <= 200){
-            return (speed * 3) + (speed/2);
-        } else if (speed <= 500){
-            return (speed * 2) + (speed/5);
-        } else if (speed <= 1000){
-            return speed;
+        if (rate <= 5) {
+            return ((rate * 22 - rate) + 45);
+        } else if (rate <= 20) {
+            return ((rate * 10) - rate);
+        } else if (rate <= 50) {
+            return ((rate * 1.5) + 275);
+        } else if (rate <= 75) {
+            return ((rate * 3.5) + 237.5);
+        } else if (rate <= 100) {
+            return ((rate * 4) + 235);
+        } else if (rate <= 200) {
+            return ((rate * 2.5) + 250);
+        } else if (rate <= 500) {
+            return ((rate * 2) - 140);
+        } else if (rate <= 1000) {
+            return ((rate * 1.2) - 200);
         }
         return 0;
-        //return (int) ss;
+    }
+
+    private float getGaugePercentageByInternetSpeed(float nSpeed) {
+        //5 15 30 25 25 100 300 500 - this is the difference between each ticks mbps
+
+        //14% = 5mbps, 25% = 20mbps, 35% = 50mbps, 50% = 75mbps, 65% = 100mbps, 75% = 200mbps, 85% = 500, 100% = 1000mbps
+        //so here we should calculate 25-14 = 11 and then 35-25 = 10, 50-35 = 15, 65-50 = 15, 75-65 = 10
+        //ex: the number between 5 to 20mbps is below, we multiple the input by 0.733 and update the percentage
+        //6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 //11/15 = 0.733
+
+        int speed = (int) nSpeed;
+        if (speed <= 5) {
+            return ((speed * 20 / 14f) * 2);
+        } else if (speed <= 20) {
+            return ((0.733f * speed) + 11);
+        } else if (speed <= 50) {
+            return ((0.344f * speed) + 29 - 10);
+        } else if (speed <= 75) {
+            float d = (0.625f * speed); //50% of gauge
+            return ((d / 15) + d); //d / 15 is 3.125
+        } else if (speed <= 100) {
+            float d = (0.625f * speed); //65% of gauge
+            return ((d / 24) + d); //24 here is total numbers between 75-100. i,e from previous % to this %
+        } else if (speed <= 200) {
+            float d = (0.101010101010101f * speed); //75% of gauge
+            return (d + 65-10); //here 65 is nothing but the previous % of gauge, 10 is 75-65=10
+        } else if (speed <= 500) {
+            return ((speed * 2) - 140);
+        } else if (speed <= 1000) {
+            return ((speed * 1.2f) - 200);
+        }
+        return 0f;
     }
 }

@@ -8,6 +8,7 @@
     <string name="ms">ms</string>
     <string name="ping">Ping</string>
     <string name="mbps">Mbps</string>
+    <string name="zero_mbps">0 Mbps</string>
     <string name="download">Download</string>
     <string name="upload">Upload</string>
     <string name="zero_digit">0</string>

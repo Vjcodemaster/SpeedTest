@@ -106,7 +106,7 @@
             style="@style/PoppinsSemiBoldFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="134 Mbps"
+            android:text="@string/zero_mbps"
             app:layout_constraintBottom_toBottomOf="@+id/ivBar"
             app:layout_constraintEnd_toEndOf="@+id/ivBar"
             app:layout_constraintStart_toStartOf="@+id/ivBar"
