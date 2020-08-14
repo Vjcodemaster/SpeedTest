@@ -1,5 +1,7 @@
 package com.demo.speedtest.ui.fragments;
 
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,10 +33,12 @@ import com.demo.speedtest.ui.viewmodels.SpeedTestVM;
 import com.github.anastr.speedviewlib.Gauge;
 import com.github.anastr.speedviewlib.components.Section;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -66,6 +70,7 @@ public class SpeedTestFragment extends Fragment {
     HttpDownloadTest downloadTest;
     HttpUploadTest uploadTest;
     Runnable task;
+    String cityName;
 
     public static SpeedTestFragment newInstance() {
         return new SpeedTestFragment();
@@ -104,10 +109,10 @@ public class SpeedTestFragment extends Fragment {
         //speedTestFragmentBinding.pointerSpeedometer.speedTo(value, 500);
         //speedTestFragmentBinding.pointerSpeedometer.speedTo(20, 500);
 
-        float percentage = getGaugePercentageByInternetSpeed(200);
+        /*float percentage = getGaugePercentageByInternetSpeed(499);
         speedTestFragmentBinding.pointerSpeedometer.speedPercentTo((int) percentage, 500);
         //speedTestFragmentBinding.pointerSpeedometer.speedPercentTo(85, 500);
-        speedTestFragmentBinding.tvGaugeSpeed.setText(String.valueOf(speedTestFragmentBinding.pointerSpeedometer.getSpeed()));
+        speedTestFragmentBinding.tvGaugeSpeed.setText(String.valueOf(speedTestFragmentBinding.pointerSpeedometer.getSpeed()));*/
 
         speedTestFragmentBinding.btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -122,6 +127,16 @@ public class SpeedTestFragment extends Fragment {
             @Override
             public void onChanged(HashMap<String, String> Observer) {
                 hmConfigData = Observer;
+                /*if(hmConfigData!=null) {
+                    Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                    List<Address> addresses = null;
+                    try {
+                        addresses = geocoder.getFromLocation(Double.parseDouble(hmConfigData.get("lat")), Double.parseDouble(hmConfigData.get("lon")), 1);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    cityName = addresses.get(0).getAddressLine(0);
+                }*/
                 getSpeedTestHostURL();
             }
         });
@@ -162,9 +177,12 @@ public class SpeedTestFragment extends Fragment {
             public void onChanged(String downloadSpeed) {
                 //position = getPositionByRate(Double.parseDouble(downloadSpeed));
                 //String sFinalDownloadSpeed = downloadSpeed + " Mbps";
-                float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
+                float percentage = getGaugePercentageByInternetSpeed(Float.parseFloat(downloadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
-                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedPercentTo((int) percentage);
+                /*float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
+                speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);*/
                 //speedTestFragmentBinding.pointerSpeedometer.speedTo(gaugePosition);
                 String sSpeed = downloadSpeed + " " + getResources().getString(R.string.mbps);
 
@@ -249,10 +267,13 @@ public class SpeedTestFragment extends Fragment {
                         Log.d("UI thread", "I am the UI thread");
                     }
                 });*/
-                float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(uploadSpeed));
+                float percentage = getGaugePercentageByInternetSpeed(Float.parseFloat(uploadSpeed));
+                speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedPercentTo((int) percentage);
+                /*float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(uploadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
                 //speedTestFragmentBinding.pointerSpeedometer.speedTo(gaugePosition);
-                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);*/
                 String sSpeed = uploadSpeed + " " + getResources().getString(R.string.mbps);
                 speedTestFragmentBinding.tvGaugeSpeed.setText(sSpeed);
                 speedTestFragmentBinding.tvUploadSpeed.setText(uploadSpeed);
@@ -617,7 +638,7 @@ public class SpeedTestFragment extends Fragment {
         return 0;
     }
 
-    public double getGaugePositionByInternetSpeed(double rate) {
+    /*public double getGaugePositionByInternetSpeed(double rate) {
         //5 15 30 25 25 100 300 500 - this is the difference between each ticks
         //int speed = (int) rate;
         //double ss =  (rate * 9.5) + (rate / 2);
@@ -640,13 +661,13 @@ public class SpeedTestFragment extends Fragment {
             return ((rate * 1.2) - 200);
         }
         return 0;
-    }
+    }*/
 
     private float getGaugePercentageByInternetSpeed(float nSpeed) {
         //5 15 30 25 25 100 300 500 - this is the difference between each ticks mbps
 
         //14% = 5mbps, 25% = 20mbps, 35% = 50mbps, 50% = 75mbps, 65% = 100mbps, 75% = 200mbps, 85% = 500, 100% = 1000mbps
-        //so here we should calculate 25-14 = 11 and then 35-25 = 10, 50-35 = 15, 65-50 = 15, 75-65 = 10
+        //so here we should calculate 25-14 = 11 and then 35-25 = 10, 50-35 = 15, 65-50 = 15, 75-65 = 10, 85-75 = 10, 100-85 = 15
         //ex: the number between 5 to 20mbps is below, we multiple the input by 0.733 and update the percentage
         //6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 //11/15 = 0.733
 
@@ -667,9 +688,12 @@ public class SpeedTestFragment extends Fragment {
             float d = (0.101010101010101f * speed); //75% of gauge
             return (d + 65-10); //here 65 is nothing but the previous % of gauge, 10 is 75-65=10
         } else if (speed <= 500) {
-            return ((speed * 2) - 140);
+            float d = (0.0334448160f * speed); //85% of gauge
+            return ((d * 75) / 299) + d + 75 - 10;
+            //return ((d * 75) - 299f / 10 - 10); //here 75 is nothing but the previous % of gauge, 10 is 75-65=10
         } else if (speed <= 1000) {
-            return ((speed * 1.2f) - 200);
+            float d = (0.030060120240481f * speed); //85% of gauge
+            return (d + 85 - 15);
         }
         return 0f;
     }

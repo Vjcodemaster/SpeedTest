@@ -16,7 +16,6 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,6 +33,7 @@ public class ServerRequestVolleyManager {
     String isp;
     double tmp = 19349458;
 
+    String sCityName;
     String url;
     String lat;
     String lon;
@@ -45,6 +45,7 @@ public class ServerRequestVolleyManager {
 
     public void volleyExecute(int nWhichTask, ViewModel viewModel) {
         this.viewModel = viewModel;
+        //this.sCityName = sCityName;
         Constants constants = Constants.values()[nWhichTask];
         switch (constants) {
             case SPEED_TEST_CONFIG:
@@ -105,6 +106,7 @@ public class ServerRequestVolleyManager {
                                                 hmConfigData.put("lon", xpp.getAttributeValue(i));
                                                 break;
                                             case "isp":
+                                                isp =  xpp.getAttributeValue(i);
                                                 hmConfigData.put("isp", xpp.getAttributeValue(i));
                                                 break;
                                         }
