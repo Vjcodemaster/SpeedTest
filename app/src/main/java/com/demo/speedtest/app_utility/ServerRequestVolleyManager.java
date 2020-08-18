@@ -17,13 +17,12 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.List;
 
 public class ServerRequestVolleyManager {
     int mStatusCode;
     ViewModel viewModel;
-    HashMap<Integer, String> mapKey = new HashMap<>();
-    HashMap<Integer, List<String>> mapValue = new HashMap<>();
+    //HashMap<Integer, String> mapKey = new HashMap<>();
+    //HashMap<Integer, List<String>> mapValue = new HashMap<>();
     HashMap<String, URLInfo> mHMURLInfo = new HashMap<>();
     int count = 0;
     int countComparator = 0;
@@ -43,9 +42,9 @@ public class ServerRequestVolleyManager {
     String sponsor;
     String host;
 
-    public void volleyExecute(int nWhichTask, ViewModel viewModel) {
+    public void volleyExecute(int nWhichTask, ViewModel viewModel, String sCityName) {
         this.viewModel = viewModel;
-        //this.sCityName = sCityName;
+        this.sCityName = sCityName;
         Constants constants = Constants.values()[nWhichTask];
         switch (constants) {
             case SPEED_TEST_CONFIG:
@@ -106,15 +105,15 @@ public class ServerRequestVolleyManager {
                                                 hmConfigData.put("lon", xpp.getAttributeValue(i));
                                                 break;
                                             case "isp":
-                                                isp =  xpp.getAttributeValue(i);
+                                                isp = xpp.getAttributeValue(i);
                                                 hmConfigData.put("isp", xpp.getAttributeValue(i));
                                                 break;
                                         }
-                                        if(hmConfigData.size()==4)
+                                        if (hmConfigData.size() == 4)
                                             break;
                                     }
                                 }
-                                if(hmConfigData.size()==4)
+                                if (hmConfigData.size() == 4)
                                     break;
                                 eventType = xpp.next();
                             }
@@ -213,6 +212,20 @@ public class ServerRequestVolleyManager {
                                         mapValue.put(count, ls);
                                         //Log.e("Size  of map", mapKey.size() + " " + mapValue.size());
                                     }*/
+                                if (!sCityName.equals("") && sCityName.equals(name) && isp.equals(sponsor)) {
+                                    mHMURLInfo = new HashMap<>();
+                                    URLInfo urlInfo = new URLInfo();
+                                    urlInfo.setLat(Double.parseDouble(lat));
+                                    urlInfo.setLon(Double.parseDouble(lon));
+                                    urlInfo.setName(name);
+                                    urlInfo.setCountry(country);
+                                    urlInfo.setCC(cc);
+                                    urlInfo.setSponsor(sponsor);
+                                    urlInfo.setHost(host);
+                                    mHMURLInfo.put(url, urlInfo);
+                                    countComparator = count;
+                                    break;
+                                }
                                 if (count > countComparator) {
                                     Location source = new Location("Source");
                                     source.setLatitude(selfLat);

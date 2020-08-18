@@ -30,8 +30,6 @@ import com.demo.speedtest.speedtest_utils.HttpUploadTest;
 import com.demo.speedtest.speedtest_utils.PingTest;
 import com.demo.speedtest.speedtest_utils.URLInfo;
 import com.demo.speedtest.ui.viewmodels.SpeedTestVM;
-import com.github.anastr.speedviewlib.Gauge;
-import com.github.anastr.speedviewlib.components.Section;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -117,7 +115,6 @@ public class SpeedTestFragment extends Fragment {
         speedTestFragmentBinding.btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                speedTestFragmentBinding.btnStart.setVisibility(View.INVISIBLE);
                 restart();
                 checkConfigAndHostURL();
             }
@@ -127,7 +124,7 @@ public class SpeedTestFragment extends Fragment {
             @Override
             public void onChanged(HashMap<String, String> Observer) {
                 hmConfigData = Observer;
-                /*if(hmConfigData!=null) {
+                if(hmConfigData!=null) {
                     Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
                     List<Address> addresses = null;
                     try {
@@ -135,8 +132,9 @@ public class SpeedTestFragment extends Fragment {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    cityName = addresses.get(0).getAddressLine(0);
-                }*/
+                    cityName = addresses.get(0).getLocality();
+                    //cityName = addresses.get(0).getAddressLine(0);
+                }
                 getSpeedTestHostURL();
             }
         });
@@ -239,19 +237,40 @@ public class SpeedTestFragment extends Fragment {
                 speedTestFragmentBinding.pointerSpeedometer.speedTo(0, 500);
                 if (isDownloadTestComplete) {
                     final String sFinalURL = sURL.replace("http://", "https://");
-                    task = new Runnable() {
+                    /*task = new Runnable() {
                         public void run() {
                             speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
                                     getActivity().getResources().getColor(R.color.colorAmber));
                             speedTestFragmentBinding.tvGaugeSpeed.setTextColor(
                                     getActivity().getResources().getColor(R.color.colorAmber));
 
+                            speedTestFragmentBinding.lottiViewLoading.setAnimation("loading_amber.json");
+                            speedTestFragmentBinding.lottiViewLoading.invalidate();
+                            speedTestFragmentBinding.lottiViewLoading.playAnimation();
                             uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
                             uploadTest.uploadTest = uploadTest;
                             uploadTest.start();
                         }
                     };
-                    worker.schedule(task, 1500, TimeUnit.MILLISECONDS);
+                    worker.schedule(task, 1500, TimeUnit.MILLISECONDS);*/
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
+                                    getActivity().getResources().getColor(R.color.colorAmber));
+                            speedTestFragmentBinding.tvGaugeSpeed.setTextColor(
+                                    getActivity().getResources().getColor(R.color.colorAmber));
+
+                            speedTestFragmentBinding.lottiViewLoading.setAnimation("loading_amber.json");
+                            speedTestFragmentBinding.lottiViewLoading.invalidate();
+                            speedTestFragmentBinding.lottiViewLoading.playAnimation();
+
+                            uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                            uploadTest.uploadTest = uploadTest;
+                            uploadTest.start();
+                        }
+                    }, 1500);
                     //reset();
                 }
             }
@@ -312,6 +331,7 @@ public class SpeedTestFragment extends Fragment {
         Handler handler = new Handler();
         task = new Runnable() {
             public void run() {
+                speedTestFragmentBinding.lottiViewLoading.setVisibility(View.GONE);
                 speedTestFragmentBinding.btnStart.setVisibility(View.VISIBLE);
                 speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
                         getActivity().getResources().getColor(R.color.colorFadedWhite)
@@ -328,6 +348,13 @@ public class SpeedTestFragment extends Fragment {
     }
 
     private void restart() {
+        speedTestFragmentBinding.lottiViewLoading.setAnimation("loading.json");
+        speedTestFragmentBinding.lottiViewLoading.invalidate();
+        speedTestFragmentBinding.lottiViewLoading.playAnimation();
+
+        speedTestFragmentBinding.btnStart.setVisibility(View.INVISIBLE);
+        speedTestFragmentBinding.btnStart.setText(getResources().getString(R.string.restart));
+        speedTestFragmentBinding.lottiViewLoading.setVisibility(View.VISIBLE);
         speedTestFragmentBinding.tvInternetProviderName.setText(getResources().getString(R.string.finding));
         speedTestFragmentBinding.tvHostServerName.setText(getResources().getString(R.string.finding));
         speedTestFragmentBinding.tvDownloadSpeed.setText(getResources().getString(R.string.zero_digit));
@@ -339,11 +366,11 @@ public class SpeedTestFragment extends Fragment {
 
 
     private void checkConfigAndHostURL() {
-        serverRequestVolleyManager.volleyExecute(SPEED_TEST_CONFIG, mSpeedTestVM);
+        serverRequestVolleyManager.volleyExecute(SPEED_TEST_CONFIG, mSpeedTestVM, "");
     }
 
     private void getSpeedTestHostURL() {
-        serverRequestVolleyManager.volleyExecute(SPEED_TEST_SERVERS, mSpeedTestVM);
+        serverRequestVolleyManager.volleyExecute(SPEED_TEST_SERVERS, mSpeedTestVM, cityName);
     }
 
     private void startSpeedTest() {

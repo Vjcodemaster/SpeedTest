@@ -22,13 +22,13 @@
             style="@style/PoppinsMediumFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_27sdp"
+            android:layout_marginStart="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:alpha="0.4"
             android:text="@string/internet_provider"
             android:textAppearance="@android:style/TextAppearance.Medium"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -37,12 +37,12 @@
             style="@style/PoppinsMediumFont"
             android:layout_width="@dimen/_110sdp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_27sdp"
-            android:maxLines="2"
-            android:ellipsize="end"
+            android:layout_marginStart="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_2sdp"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/colorVeryDarkBlue"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_12ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvInternetProviderHeading" />
 
@@ -52,11 +52,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20sdp"
-            android:layout_marginEnd="@dimen/_27sdp"
+            android:layout_marginEnd="@dimen/_25sdp"
             android:alpha="0.4"
             android:text="@string/host_server"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -65,12 +65,12 @@
             style="@style/PoppinsMediumFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxLines="2"
-            android:ellipsize="end"
             android:layout_marginTop="@dimen/_2sdp"
-            android:layout_marginEnd="@dimen/_27sdp"
+            android:layout_marginEnd="@dimen/_25sdp"
+            android:ellipsize="end"
+            android:maxLines="2"
             android:textColor="@color/colorVeryDarkBlue"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_12ssp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvHostServerHeading" />
 
@@ -89,11 +89,9 @@
             android:id="@+id/pointerSpeedometer"
             android:layout_width="@dimen/_230sdp"
             android:layout_height="@dimen/_180sdp"
-            android:layout_marginEnd="@dimen/_2sdp"
             android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginEnd="@dimen/_2sdp"
             android:visibility="visible"
-            app:sv_maxSpeed="1000"
-            app:sv_minSpeed="0"
             app:layout_constraintBottom_toBottomOf="@+id/ivBar"
             app:layout_constraintEnd_toEndOf="@+id/ivBar"
             app:layout_constraintStart_toStartOf="@+id/ivBar"
@@ -102,8 +100,13 @@
             app:sv_centerCircleColor="@android:color/transparent"
             app:sv_indicatorColor="@android:color/transparent"
             app:sv_markColor="@android:color/transparent"
+            app:sv_maxSpeed="1000"
+            app:sv_minSpeed="0"
+            app:sv_speedTextColor="@android:color/transparent"
             app:sv_speedometerColor="@color/colorFadedWhite"
-            app:sv_speedometerWidth="@dimen/_12sdp" />
+            app:sv_speedometerWidth="@dimen/_12sdp"
+            app:sv_textColor="@android:color/transparent"
+            app:sv_unitTextColor="@android:color/transparent" />
 
         <TextView
             android:id="@+id/tvGaugeSpeed"
@@ -132,16 +135,29 @@
             app:layout_constraintTop_toBottomOf="@+id/ivBar"
             tools:ignore="UnusedAttribute" />
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottiViewLoading"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@+id/pointerSpeedometer"
+            app:layout_constraintStart_toStartOf="@+id/pointerSpeedometer"
+            app:layout_constraintTop_toBottomOf="@+id/pointerSpeedometer"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="loading.json"
+            app:lottie_loop="true" />
+
         <TextView
             android:id="@+id/tvPing"
             style="@style/PoppinsRegularFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_27sdp"
+            android:layout_marginStart="@dimen/_25sdp"
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@{speedTestVM.getPing, default=0}"
             android:textColor="@color/colorDarkBlue"
-            android:textSize="@dimen/_19ssp"
+            android:textSize="@dimen/_17ssp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
@@ -155,7 +171,7 @@
             android:alpha="0.7"
             android:text="@string/ms"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toBottomOf="@+id/tvPing"
             app:layout_constraintStart_toEndOf="@+id/tvPing"
             app:layout_constraintTop_toTopOf="@+id/tvPing" />
@@ -168,7 +184,7 @@
             android:alpha="0.7"
             android:text="@string/ping"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintStart_toStartOf="@+id/tvPing"
             app:layout_constraintTop_toBottomOf="@+id/tvMS" />
 
@@ -192,21 +208,21 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/zero_digit"
             android:textColor="@color/colorDarkBlue"
-            android:textSize="@dimen/_19ssp"
+            android:textSize="@dimen/_17ssp"
             app:layout_constraintStart_toEndOf="@+id/viewBorder"
             app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
         <TextView
             android:id="@+id/tvDownloadMBPS"
             style="@style/PoppinsRegularFont"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="46dp"
+            android:layout_height="22dp"
             android:layout_marginStart="@dimen/_2sdp"
-            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginTop="@dimen/_1sdp"
             android:alpha="0.7"
             android:text="@string/mbps"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toBottomOf="@+id/tvDownloadSpeed"
             app:layout_constraintStart_toEndOf="@+id/tvDownloadSpeed"
             app:layout_constraintTop_toTopOf="@+id/tvDownloadSpeed" />
@@ -217,13 +233,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.7"
-            android:drawableStart="@drawable/ic_download"
             android:drawablePadding="@dimen/_2sdp"
             android:text="@string/download"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintStart_toStartOf="@+id/tvDownloadSpeed"
-            app:layout_constraintTop_toBottomOf="@+id/tvDownloadMBPS" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDownloadMBPS"
+            app:drawableStartCompat="@drawable/ic_download" />
 
         <View
             android:id="@+id/viewBorderOne"
@@ -233,7 +249,6 @@
             android:background="@color/colorGray"
             app:layout_constraintBottom_toBottomOf="@+id/tvDownloadHeading"
             app:layout_constraintEnd_toEndOf="@+id/btnStart"
-            app:layout_constraintStart_toEndOf="@+id/tvDownloadHeading"
             app:layout_constraintTop_toTopOf="@+id/tvDownloadSpeed" />
 
         <TextView
@@ -245,7 +260,7 @@
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/zero_digit"
             android:textColor="@color/colorAmber"
-            android:textSize="@dimen/_19ssp"
+            android:textSize="@dimen/_17ssp"
             app:layout_constraintStart_toEndOf="@+id/viewBorderOne"
             app:layout_constraintTop_toBottomOf="@+id/btnStart" />
 
@@ -259,7 +274,7 @@
             android:alpha="0.7"
             android:text="@string/mbps"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_12ssp"
+            android:textSize="@dimen/_11ssp"
             app:layout_constraintBottom_toBottomOf="@+id/tvUploadSpeed"
             app:layout_constraintStart_toEndOf="@+id/tvUploadSpeed"
             app:layout_constraintTop_toTopOf="@+id/tvUploadSpeed" />
@@ -270,12 +285,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:alpha="0.7"
-            android:drawableStart="@drawable/ic_upload"
             android:drawablePadding="@dimen/_2sdp"
             android:text="@string/upload"
             android:textColor="@android:color/black"
-            android:textSize="@dimen/_14ssp"
+            android:textSize="@dimen/_13ssp"
             app:layout_constraintStart_toStartOf="@+id/tvUploadSpeed"
-            app:layout_constraintTop_toBottomOf="@+id/tvUploadMBPS" />
+            app:layout_constraintTop_toBottomOf="@+id/tvUploadMBPS"
+            app:drawableStartCompat="@drawable/ic_upload" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

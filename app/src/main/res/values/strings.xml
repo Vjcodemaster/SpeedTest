@@ -13,4 +13,5 @@
     <string name="upload">Upload</string>
     <string name="zero_digit">0</string>
     <string name="finding">Finding…</string>
+    <string name="restart">Restart</string>
 </resources>
