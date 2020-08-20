@@ -103,7 +103,7 @@
             app:sv_maxSpeed="1000"
             app:sv_minSpeed="0"
             app:sv_speedTextColor="@android:color/transparent"
-            app:sv_speedometerColor="@color/colorFadedWhite"
+            app:sv_speedometerColor="@color/colorAmber"
             app:sv_speedometerWidth="@dimen/_12sdp"
             app:sv_textColor="@android:color/transparent"
             app:sv_unitTextColor="@android:color/transparent" />
@@ -245,18 +245,20 @@
             android:id="@+id/viewBorderOne"
             android:layout_width="@dimen/_1sdp"
             android:layout_height="@dimen/_69sdp"
+            android:layout_marginStart="8dp"
             android:alpha="0.15"
             android:background="@color/colorGray"
             app:layout_constraintBottom_toBottomOf="@+id/tvDownloadHeading"
-            app:layout_constraintEnd_toEndOf="@+id/btnStart"
-            app:layout_constraintTop_toTopOf="@+id/tvDownloadSpeed" />
+            app:layout_constraintStart_toEndOf="@+id/btnStart"
+            app:layout_constraintTop_toTopOf="@+id/tvDownloadSpeed"
+            app:layout_constraintVertical_bias="0.468" />
 
         <TextView
             android:id="@+id/tvUploadSpeed"
             style="@style/PoppinsRegularFont"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_22sdp"
+            android:layout_marginStart="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_16sdp"
             android:text="@string/zero_digit"
             android:textColor="@color/colorAmber"

@@ -69,6 +69,7 @@ public class SpeedTestFragment extends Fragment {
     HttpUploadTest uploadTest;
     Runnable task;
     String cityName;
+    Handler handler = new Handler();
 
     public static SpeedTestFragment newInstance() {
         return new SpeedTestFragment();
@@ -116,7 +117,12 @@ public class SpeedTestFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 restart();
-                checkConfigAndHostURL();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        checkConfigAndHostURL();
+                    }
+                },1250);
             }
         });
 
@@ -352,6 +358,7 @@ public class SpeedTestFragment extends Fragment {
         speedTestFragmentBinding.lottiViewLoading.invalidate();
         speedTestFragmentBinding.lottiViewLoading.playAnimation();
 
+        speedTestFragmentBinding.tvPing.setText(getResources().getString(R.string.zero_digit));
         speedTestFragmentBinding.btnStart.setVisibility(View.INVISIBLE);
         speedTestFragmentBinding.btnStart.setText(getResources().getString(R.string.restart));
         speedTestFragmentBinding.lottiViewLoading.setVisibility(View.VISIBLE);
