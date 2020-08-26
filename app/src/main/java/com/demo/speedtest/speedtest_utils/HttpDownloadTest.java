@@ -81,18 +81,24 @@ public class HttpDownloadTest extends Thread {
 
     @Override
     public void run() {
-        URL url = null;
+        URL url;
         downloadedByte = 0;
-        int responseCode = 0;
+        int responseCode;
 
         List<String> fileUrls = new ArrayList<>();
         fileUrls.add(fileURL + "random4000x4000.jpg");
+        fileUrls.add(fileURL + "random4000x4000.jpg");
+        fileUrls.add(fileURL + "random3000x3000.jpg");
+        fileUrls.add(fileURL + "random3000x3000.jpg");
+        fileUrls.add(fileURL + "random3000x3000.jpg");
         fileUrls.add(fileURL + "random3000x3000.jpg");
 
         startTime = System.currentTimeMillis();
 
         outer:
-        for (String link : fileUrls) {
+       // for (String link : fileUrls) {
+        for (int i=0; i< fileUrls.size(); i++) {
+            String link = fileUrls.get(i);
             try {
                 url = new URL(link);
                 httpsConn = (HttpsURLConnection) url.openConnection();
@@ -113,9 +119,14 @@ public class HttpDownloadTest extends Thread {
             try {
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     byte[] buffer = new byte[10240];
+                    /*if(i==0) {
+                        buffer = new byte[204800];
+                    } else{
+                        buffer = new byte[10240];
+                    }*/
 
                     InputStream inputStream = httpsConn.getInputStream();
-                    int len = 0;
+                    int len;
 
                     while ((len = inputStream.read(buffer)) != -1) {
                         downloadedByte += len;
@@ -137,6 +148,9 @@ public class HttpDownloadTest extends Thread {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            /*if(downloadElapsedTime < timeout && i==fileUrls.size()-1){
+                fileUrls.add("https://speedtestb.dvois.com:8080/speedtest/random3000x3000.jpg");
+            }*/
         }
 
         endTime = System.currentTimeMillis();

@@ -80,7 +80,8 @@ public class HttpUploadTest extends Thread {
 
         if (uploadedKByte >= 0) {
             instantUploadRate = round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
-            speedTestVM.postUploadSpeed(String.valueOf(instantUploadRate));
+            int uploadSpeed = (int) round((Double) (((uploadedKByte / 1000.0) * 8) / elapsedTime), 2);
+            speedTestVM.postUploadSpeed(String.valueOf(uploadSpeed));
         } else {
             instantUploadRate = 0.0;
         }

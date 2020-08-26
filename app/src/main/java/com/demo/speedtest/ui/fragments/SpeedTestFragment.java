@@ -40,7 +40,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.demo.speedtest.app_utility.StaticReferenceClass.SPEED_TEST_CONFIG;
 import static com.demo.speedtest.app_utility.StaticReferenceClass.SPEED_TEST_SERVERS;
