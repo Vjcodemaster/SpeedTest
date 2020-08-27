@@ -1,8 +1,11 @@
 package com.demo.speedtest.ui.fragments;
 
+import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -23,9 +26,12 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.demo.speedtest.R;
 import com.demo.speedtest.app_utility.ServerRequestVolleyManager;
+import com.demo.speedtest.app_utility.StaticReferenceClass;
 import com.demo.speedtest.databinding.SpeedTestFragmentBinding;
 import com.demo.speedtest.speedtest_utils.GetSpeedTestHostsHandler;
 import com.demo.speedtest.speedtest_utils.HttpDownloadTest;
+import com.demo.speedtest.speedtest_utils.HttpDownloadTestSecondThread;
+import com.demo.speedtest.speedtest_utils.HttpDownloadTestThirdThread;
 import com.demo.speedtest.speedtest_utils.HttpUploadTest;
 import com.demo.speedtest.speedtest_utils.PingTest;
 import com.demo.speedtest.speedtest_utils.URLInfo;
@@ -65,6 +71,8 @@ public class SpeedTestFragment extends Fragment {
     String sURL;
     ServerRequestVolleyManager serverRequestVolleyManager;
     HttpDownloadTest downloadTest;
+    HttpDownloadTestSecondThread downloadTestSecondThread;
+    HttpDownloadTestThirdThread downloadTestThirdThread;
     HttpUploadTest uploadTest;
     Runnable task;
     String cityName;
@@ -169,13 +177,51 @@ public class SpeedTestFragment extends Fragment {
                     Toast.makeText(getActivity(), "Unable to ping", Toast.LENGTH_SHORT).show();
                 }
                 String sFinalURL = sURL.replace("http://", "https://");
-                downloadTest = new HttpDownloadTest(sFinalURL.replace(sURL.split("/")
-                        [sURL.split("/").length - 1], ""), mSpeedTestVM);
-                downloadTest.start();
+
+                int networkType = checkNetworkType();
+                mSpeedTestVM.setNetworkType(networkType);
+                if(networkType==StaticReferenceClass.NETWORK_TYPE_MOBILE){
+                    downloadTest = new HttpDownloadTest(sFinalURL.replace(sURL.split("/")
+                            [sURL.split("/").length - 1], ""), mSpeedTestVM);
+
+                    downloadTestSecondThread = new HttpDownloadTestSecondThread(sFinalURL.replace(sURL.split("/")
+                            [sURL.split("/").length - 1], ""), mSpeedTestVM);
+
+                    downloadTest.start();
+                    downloadTestSecondThread.start();
+                } else {
+                    downloadTest = new HttpDownloadTest(sFinalURL.replace(sURL.split("/")
+                            [sURL.split("/").length - 1], ""), mSpeedTestVM);
+
+                    downloadTestSecondThread = new HttpDownloadTestSecondThread(sFinalURL.replace(sURL.split("/")
+                            [sURL.split("/").length - 1], ""), mSpeedTestVM);
+
+                    downloadTestThirdThread = new HttpDownloadTestThirdThread(sFinalURL.replace(sURL.split("/")
+                            [sURL.split("/").length - 1], ""), mSpeedTestVM);
+
+                    downloadTest.start();
+                    downloadTestSecondThread.start();
+                    downloadTestThirdThread.start();
+                }
             }
         });
 
-        mSpeedTestVM.downloadSpeed.observe(getActivity(), new Observer<String>() {
+        mSpeedTestVM.averageDownloadSpeed.observe(getActivity(), new Observer<String>() {
+            @Override
+            public void onChanged(String downloadSpeed) {
+                float percentage = getGaugePercentageByInternetSpeed(Float.parseFloat(downloadSpeed));
+                speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedPercentTo((int) percentage);
+                String sSpeed = downloadSpeed + " " + getResources().getString(R.string.mbps);
+
+                speedTestFragmentBinding.tvGaugeSpeed.setText(sSpeed);
+                speedTestFragmentBinding.tvDownloadSpeed.setText(downloadSpeed);
+                speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
+                        getActivity().getResources().getColor(R.color.colorDarkBlue));
+            }
+        });
+
+        /*mSpeedTestVM.downloadSpeed.observe(getActivity(), new Observer<String>() {
             @Override
             public void onChanged(String downloadSpeed) {
                 //position = getPositionByRate(Double.parseDouble(downloadSpeed));
@@ -183,9 +229,9 @@ public class SpeedTestFragment extends Fragment {
                 float percentage = getGaugePercentageByInternetSpeed(Float.parseFloat(downloadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
                 speedTestFragmentBinding.pointerSpeedometer.realSpeedPercentTo((int) percentage);
-                /*float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
+                *//*float gaugePosition = (float) getGaugePositionByInternetSpeed(Double.parseDouble(downloadSpeed));
                 speedTestFragmentBinding.pointerSpeedometer.setAccelerate(1);
-                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);*/
+                speedTestFragmentBinding.pointerSpeedometer.realSpeedTo(gaugePosition);*//*
                 //speedTestFragmentBinding.pointerSpeedometer.speedTo(gaugePosition);
                 String sSpeed = downloadSpeed + " " + getResources().getString(R.string.mbps);
 
@@ -193,21 +239,21 @@ public class SpeedTestFragment extends Fragment {
                 speedTestFragmentBinding.tvDownloadSpeed.setText(downloadSpeed);
                 speedTestFragmentBinding.pointerSpeedometer.setSpeedometerColor(
                         getActivity().getResources().getColor(R.color.colorDarkBlue));
-                /*if (downloadTest.isFinished()) {
+                *//*if (downloadTest.isFinished()) {
                     //Log.e("Anim", "500");
                     rotate = new RotateAnimation(position, 0, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
                     ANIM_DURATION = 500;
                     final String sFinalURL = sURL.replace("http://", "https://");
                     position = 0;
                     lastPosition = 0;
-                    *//*getActivity().runOnUiThread(new Runnable() {
+                    *//**//*getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
                             uploadTest.uploadTest = uploadTest;
                             uploadTest.start();
                         }
-                    });*//*
+                    });*//**//*
 
                     Runnable task = new Runnable() {
                         public void run() {
@@ -218,9 +264,9 @@ public class SpeedTestFragment extends Fragment {
                     };
                     worker.schedule(task, 1200, TimeUnit.MILLISECONDS);
                     //worker.uploadTest();
-                    *//*uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
+                    *//**//*uploadTest = new HttpUploadTest(sFinalURL, mSpeedTestVM);
                     uploadTest.uploadTest = uploadTest;
-                    uploadTest.start();*//*
+                    uploadTest.start();*//**//*
                 } else {
                     //Log.e("Anim", "300");
                     rotate = new RotateAnimation(lastPosition, position, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -229,9 +275,9 @@ public class SpeedTestFragment extends Fragment {
                 rotate.setInterpolator(new LinearInterpolator());
                 rotate.setDuration(ANIM_DURATION);
                 speedTestFragmentBinding.ivBar.startAnimation(rotate);
-                lastPosition = position;*/
+                lastPosition = position;*//*
             }
-        });
+        });*/
 
         mSpeedTestVM.isDownloadSpeedComplete.observe(getActivity(), new Observer<Boolean>() {
             @Override
@@ -729,5 +775,20 @@ public class SpeedTestFragment extends Fragment {
             return (d + 85 - 15);
         }
         return 0f;
+    }
+
+    public int checkNetworkType() {
+        ConnectivityManager cm = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null) { // connected to the internet
+            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+                // connected to wifi
+                return StaticReferenceClass.NETWORK_TYPE_WIFI;
+            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
+                // connected to the mobile provider's data plan
+                return StaticReferenceClass.NETWORK_TYPE_MOBILE;
+            }
+        }
+        return 0;
     }
 }

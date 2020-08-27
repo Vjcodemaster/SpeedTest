@@ -17,7 +17,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocketFactory;
 
-public class HttpDownloadTest extends Thread {
+public class HttpDownloadTestSecondThread extends Thread {
 
     public String fileURL;
     long startTime = 0;
@@ -32,11 +32,11 @@ public class HttpDownloadTest extends Thread {
     HttpsURLConnection httpsConn = null;
     SpeedTestVM speedTestVM;
 
-    public HttpDownloadTest(String fileURL) {
+    public HttpDownloadTestSecondThread(String fileURL) {
         this.fileURL = fileURL;
     }
 
-    public HttpDownloadTest(String fileURL, SpeedTestVM speedTestVM) {
+    public HttpDownloadTestSecondThread(String fileURL, SpeedTestVM speedTestVM) {
         this.fileURL = fileURL;
         this.speedTestVM = speedTestVM;
     }
@@ -66,7 +66,7 @@ public class HttpDownloadTest extends Thread {
             if (downloadElapsedTime >= timeout)
                 finished = true;
 
-            speedTestVM.postDownloadSpeed(String.valueOf(downloadSpeed), 1);
+            speedTestVM.postDownloadSpeed(String.valueOf(downloadSpeed), 2);
         } else {
             this.instantDownloadRate = 0.0;
         }
@@ -159,7 +159,7 @@ public class HttpDownloadTest extends Thread {
         finalDownloadRate = ((downloadedByte * 8) / (1000 * 1000.0)) / downloadElapsedTime;
 
         finished = true;
-        speedTestVM.postDownloadTestResult(true, 1);
+        speedTestVM.postDownloadTestResult(true, 2);
     }
 
 }

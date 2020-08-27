@@ -133,10 +133,10 @@
         <TextView
             android:id="@+id/tvDownloadMBPS"
             style="@style/PoppinsRegularFont"
-            android:layout_width="46dp"
-            android:layout_height="22dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
             android:layout_marginStart="@dimen/_2sdp"
-            android:layout_marginBottom="@dimen/_2sdp"
             android:alpha="0.7"
             android:text="@string/mbps"
             android:textColor="@android:color/black"
@@ -198,8 +198,8 @@
             android:text="@string/ping"
             android:textColor="@android:color/black"
             android:textSize="@dimen/_12ssp"
-            app:layout_constraintEnd_toEndOf="@+id/viewBorderAbove"
-            app:layout_constraintStart_toStartOf="@+id/viewBorderAbove"
+            app:layout_constraintEnd_toEndOf="@+id/btnStart"
+            app:layout_constraintStart_toStartOf="@+id/pointerSpeedometer"
             app:layout_constraintTop_toTopOf="@+id/tvPing" />
 
         <TextView
